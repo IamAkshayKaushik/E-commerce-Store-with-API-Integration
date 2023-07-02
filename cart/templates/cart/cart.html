@@ -1,2 +1,51 @@
 <h1>Shopping Cart</h1>
-<!-- Add your cart-related HTML and logic here -->
+
+{% if order_items %}
+<table>
+  <thead>
+    <tr>
+      <th>Product</th>
+      <th>Quantity</th>
+      <th>Price</th>
+      <th>Subtotal</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for order_item in order_items %}
+    <tr>
+      <td>{{ order_item.product.name }}</td>
+      <td>{{ order_item.quantity }}</td>
+      <td>${{ order_item.product.price }}</td>
+      <td>${{ total_amount }}</td>
+      <td>
+        <form method="POST" action="{% url 'remove_from_cart' order_item.id %}">
+          {% csrf_token %}
+          <input
+            type="number"
+            name="quantity"
+            value="{{ order_item.quantity }}"
+            min="1"
+            max="{{ order_item.quantity }}"
+          />
+          <button type="submit">Remove</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+    <tr>
+      <td colspan="3"></td>
+      <td>Total: ${{ total_amount }}</td>
+    </tr>
+    <tr>
+      <td colspan="2"></td>
+      <td>
+        <form method="POST" action="{% url 'checkout' %}">
+          {% csrf_token %}
+          <button type="submit">Checkout</button>
+        </form>
+      </td>
+    </tr>
+  </tbody>
+</table>
+{% endif %}
